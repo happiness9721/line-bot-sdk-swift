@@ -1,0 +1,70 @@
+import Foundation
+
+public class LineBot {
+  private var client: HTTPClient {
+    return CurlHTTPClient()
+  }
+  private static var accessToken = ""
+  public let endpoint = "https://api.line.me/v2/bot/message/reply"
+  public let method = "POST"
+  public let replyToken: String
+  public var messages = [[String: String]]()
+  public var body: [String : Any]? {
+    if messages.count > 0 {
+      let payload: [String: Any] = [
+        "replyToken": replyToken,
+        "messages": messages
+      ]
+      return payload
+    } else {
+      return nil
+    }
+  }
+
+  public init(replyToken: String) {
+    self.replyToken = replyToken
+  }
+
+  public class func configure(with accessToken: String) {
+    self.accessToken = accessToken
+  }
+
+  public func add(message: String) {
+    if messages.count < 5 {
+      messages.append(["type": "text",
+                       "text": message])
+    }
+  }
+
+  public func add(image: String) {
+    if messages.count < 5 {
+      messages.append(["type": "image",
+                       "originalContentUrl": image,
+                       "previewImageUrl": image])
+    }
+  }
+
+  public func add(originalContentUrl: String, previewImageUrl: String) {
+    if messages.count < 5 {
+      messages.append(["type": "image",
+                       "originalContentUrl": originalContentUrl,
+                       "previewImageUrl": previewImageUrl])
+    }
+  }
+
+  public func send() {
+    if let body = body {
+      var request = URLRequest(url: URL(string: endpoint)!)
+
+      request.httpMethod = method
+
+      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+      request.addValue("Bearer \(LineBot.accessToken)", forHTTPHeaderField: "Authorization")
+
+      request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)
+
+      client.sendRequest(request: request)
+    }
+  }
+}
+
