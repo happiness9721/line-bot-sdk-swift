@@ -10,7 +10,7 @@ Japanese: https://devdocs.line.me/ja/
 
 ## Installation ##
 
-# Package.swift #
+### Package.swift ###
 
 Add package to your `Package.swift`
 
