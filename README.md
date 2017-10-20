@@ -8,24 +8,21 @@ See the official API documentation for more information.
 English: https://devdocs.line.me/en/<br>
 Japanese: https://devdocs.line.me/ja/
 
-## Installation ##
+## Setup
+Add the dependency to Package.swift.
+Note that the syntax is different for Swift 3 and 4.
 
-### Package.swift ###
-
-Add package to your `Package.swift`
-
+Swift 3:
 ```swift
-import PackageDescription
-
-let package = Package(
-    name: "YourBotName",
-    dependencies: [
-        .Package(url: "https://github.com/happiness9721/line-bot-sdk-swift.git", majorVersion: 1, minor: 0),
-    ]
-)
+.Package(url: "https://github.com/happiness9721/line-bot-sdk-swift.git", majorVersion: 1, minor: 0)
 ```
 
-## Configuration ##
+Swift 4:
+```swift
+.package(url: "https://github.com/happiness9721/line-bot-sdk-swift.git", .upToNextMajor(from: "1.0.0"))
+```
+
+## Configuration
 
 1. put this in your `Droplet+Setup.swift`, inside of Droplet's setup() 
 
@@ -44,7 +41,7 @@ LineBot.configure(with: accessToken)
 }
 ```
 
-## How to start ##
+## How to start
 
 Put below code in your Routes.swift or your own Controller.
 
