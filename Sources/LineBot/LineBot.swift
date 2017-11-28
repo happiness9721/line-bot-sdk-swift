@@ -1,12 +1,14 @@
 import Foundation
 
 public class LineBot {
+
   private var client: HTTPClient {
-    return CurlHTTPClient()
+    return NativeHTTPClient()
   }
+
   private static var accessToken = ""
   public let endpoint = "https://api.line.me/v2/bot/message/reply"
-  public let method = "POST"
+  private let method = "POST"
   public let replyToken: String
   public var messages = [[String: String]]()
   public var body: [String : Any]? {
@@ -66,5 +68,6 @@ public class LineBot {
       client.sendRequest(request: request)
     }
   }
+
 }
 
