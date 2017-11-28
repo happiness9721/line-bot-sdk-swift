@@ -10,7 +10,9 @@ import Foundation
 class NativeHTTPClient: HTTPClient {
 
   func sendRequest(request: URLRequest) {
-    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+    let session = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
+
+    let dataTask = session.dataTask(with: request) { data, response, error in
       guard let data = data, error == nil else {
         print("error=\(String(describing: error))")
         return
@@ -24,7 +26,7 @@ class NativeHTTPClient: HTTPClient {
       let responseString = String(data: data, encoding: .utf8)
       print("responseString = \(String(describing: responseString))")
     }
-    task.resume()
+    dataTask.resume()
   }
   
 }
