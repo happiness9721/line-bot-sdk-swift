@@ -1,16 +1,23 @@
+//
+//  LineBot.swift
+//  LineBotPackageDescription
+//
+//  Created by happiness9721 on 2017/10/18.
+//
+
 import Foundation
 
 public class LineBot {
 
   private var client: HTTPClient {
-    return NativeHTTPClient()
+    return HTTPClient()
   }
 
   private static var accessToken = ""
-  public let endpoint = "https://api.line.me/v2/bot/message/reply"
+  private let endpoint = "https://api.line.me/v2/bot/message/reply"
   private let method = "POST"
-  public let replyToken: String
-  public var messages = [[String: String]]()
+  private let replyToken: String
+  private var messages = [[String: String]]()
   public var body: [String : Any]? {
     if messages.count > 0 {
       let payload: [String: Any] = [

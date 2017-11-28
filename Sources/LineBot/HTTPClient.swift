@@ -1,15 +1,15 @@
 //
-//  NativeHTTPClient.swift
+//  HTTPClient.swift
 //  LineBotPackageDescription
 //
-//  Created by 江承諭 on 2017/11/28.
+//  Created by happiness9721 on 2017/11/28.
 //
 
 import Foundation
 
-class NativeHTTPClient: HTTPClient {
+internal class HTTPClient {
 
-  func sendRequest(request: URLRequest) {
+  internal func sendRequest(request: URLRequest) {
     let session = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
 
     let dataTask = session.dataTask(with: request) { data, response, error in
@@ -28,5 +28,5 @@ class NativeHTTPClient: HTTPClient {
     }
     dataTask.resume()
   }
-  
+
 }
