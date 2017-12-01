@@ -57,7 +57,7 @@ public class LineMessageImage: LineMessage {
   public func toDict() -> [String : Any] {
     return ["type": "image",
             "originalContentUrl": originalContentUrl,
-            "originalContentUrl": previewImageUrl]
+            "previewImageUrl": previewImageUrl]
   }
 
 }
@@ -75,7 +75,7 @@ public class LineMessageVideo: LineMessage {
   public func toDict() -> [String : Any] {
     return ["type": "video",
             "originalContentUrl": originalContentUrl,
-            "originalContentUrl": previewImageUrl]
+            "previewImageUrl": previewImageUrl]
   }
 
 }
