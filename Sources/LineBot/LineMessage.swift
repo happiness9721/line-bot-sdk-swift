@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreLocation
 
 public protocol LineMessage {
   func toDict() -> [String: Any]
@@ -103,20 +102,22 @@ public class LineMessageLocation: LineMessage {
 
   public var title: String
   public var address: String
-  public var location: CLLocationCoordinate2D
+  public var latitude: Double
+  public var longitude: Double
 
-  public init(title: String, address: String, location: CLLocationCoordinate2D) {
+  public init(title: String, address: String, latitude: Double, longitude: Double) {
     self.title = title
     self.address = address
-    self.location = location
+    self.latitude = latitude
+    self.longitude = longitude
   }
 
   public func toDict() -> [String : Any] {
     return ["type": "location",
             "title": title,
             "address": address,
-            "latitude": location.latitude,
-            "longitude": location.longitude]
+            "latitude": latitude,
+            "longitude": longitude]
   }
   
 }

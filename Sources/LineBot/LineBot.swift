@@ -59,17 +59,20 @@ public final class LineBot {
 
     print(jsonBody)
 
-    if validateSignature(message: jsonBody, signature: signature) {
-      let lineBot = LineBot(replyToken: replyToken)
-      lineBot.source = source
-      lineBot.receivedMessage = message
-      return lineBot
-    } else {
+    guard validateSignature(message: jsonBody, signature: signature) else {
       return nil
     }
+
+    let lineBot = LineBot(replyToken: replyToken)
+    lineBot.source = source
+    lineBot.receivedMessage = message
+    return lineBot
   }
 
-  public static func makePush(to: [String]) -> LineBot {
+  public static func makePush(to: [String]) -> LineBot? {
+    guard to.count > 0 else {
+      return nil
+    }
     let lineBot = LineBot(pushTo: to)
     return lineBot
   }
