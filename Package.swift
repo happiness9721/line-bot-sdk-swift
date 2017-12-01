@@ -2,6 +2,8 @@
 import PackageDescription
 
 let package = Package(
-    name: "LineBot"
+  name: "LineBot",
+  dependencies: [
+    .Package(url: "https://github.com/vapor/vapor.git", majorVersion: 2),
+  ]
 )
-
