@@ -1,6 +1,6 @@
 //
 //  LineBot.swift
-//  LineBotPackageDescription
+//  LineBot
 //
 //  Created by happiness9721 on 2017/10/18.
 //
@@ -33,7 +33,7 @@ public final class LineBot {
   }
 
   public static func makeReply(from request: Request) -> LineBot? {
-    guard let jsonBody = request.body.bytes?.makeString() else {
+    guard let body = request.body.bytes else {
       return nil
     }
 
@@ -57,9 +57,7 @@ public final class LineBot {
       return nil
     }
 
-    print(jsonBody)
-
-    guard validateSignature(message: jsonBody, signature: signature) else {
+    guard validateSignature(body: body, signature: signature) else {
       return nil
     }
 
@@ -86,18 +84,18 @@ public final class LineBot {
     if messages.count < 5 {
       messages.append(message.toDict())
     } else {
-      print("⚠️ There are 5 messages in array, this message haven't been added.")
+      print("⚠️ There are already 5 messages in queue, this message cannot be added.")
     }
   }
 
-  private static func validateSignature(message: String, signature: String) -> Bool {
+  private static func validateSignature(body: Bytes, signature: String) -> Bool {
     do {
       let hash = try HMAC.make(.sha256,
-                               message.makeBytes(),
+                               body,
                                key: LineBot.channelSecret.makeBytes())
-      print(signature)
-      print(hash.base64Encoded.hexString)
-      return hash.base64Encoded.hexString == signature
+      let hmacData = Data(hash)
+      let hmacHex = hmacData.base64EncodedString(options: .endLineWithLineFeed)
+      return hmacHex == signature
     } catch {
       return false
     }
