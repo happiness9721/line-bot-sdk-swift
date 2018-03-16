@@ -6,73 +6,90 @@
 //
 
 import Foundation
-import Crypto
-import Vapor
+import Cryptor
 
 public final class LineBot {
+  public enum MessageType {
+    case reply(token: String)
+    case push(to: [String])
 
-  public var source: Node?
-  public var receivedMessage: String?
+    private var endPoint: String {
+      switch self {
+      case .reply:
+        return "https://api.line.me/v2/bot/message/reply"
+      case .push:
+        return "https://api.line.me/v2/bot/message/push"
+      }
+    }
+
+    private var method: String {
+      return "POST"
+    }
+
+    private func request(body: [String: Any]) -> URLRequest {
+      var request = URLRequest(url: URL(string: endPoint)!)
+
+      request.httpMethod = method
+
+      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+      request.addValue("Bearer \(LineBot.accessToken)", forHTTPHeaderField: "Authorization")
+      request.httpBody = try? JSONSerialization.data(withJSONObject: body,
+                                                     options: .prettyPrinted)
+      return request
+    }
+
+    fileprivate func send(messages: [[String: Any]], with client: HTTPClient) {
+      switch self {
+      case .reply(let token):
+        guard messages.count > 0 else {
+          print("⚠️ There are no message in queue, this reply cannot be sent.")
+          return
+        }
+        let body: [String: Any] = [
+          "replyToken": token,
+          "messages": messages
+        ]
+        client.sendRequest(request: request(body: body))
+      case .push(let pushTo):
+        guard messages.count > 0 else {
+          print("⚠️ There are no message in queue, this push cannot be sent.")
+          return
+        }
+        for to in pushTo {
+          let body: [String: Any] = [
+            "to": to,
+            "messages": messages
+          ]
+          client.sendRequest(request: request(body: body))
+        }
+      }
+    }
+  }
 
   private static var accessToken = ""
   private static var channelSecret = ""
-  private let replyEndpoint = "https://api.line.me/v2/bot/message/reply"
-  private let pushEndpoint = "https://api.line.me/v2/bot/message/push"
-  private let method = "POST"
-  private let replyToken: String?
-  private let pushTo: [String]?
+  private let messageType: MessageType
   private var messages = [[String: Any]]()
 
   private var client: HTTPClient {
     return HTTPClient()
   }
 
-  private init(pushTo: [String]? = nil, replyToken: String? = nil) {
-    self.pushTo = pushTo
-    self.replyToken = replyToken
+  public init(messageType: MessageType) {
+    self.messageType = messageType
   }
 
-  public static func makeReply(from request: Request) -> LineBot? {
-    guard let body = request.body.bytes else {
-      return nil
-    }
-
-    guard let signature = request.headers["X-Line-Signature"] else {
-      return nil
-    }
-
-    guard let object = request.data["events"]?.array?.first?.object else {
-      return nil
-    }
-
-    guard let message = object["message"]?.object?["text"]?.string else {
-      return nil
-    }
-
-    guard let replyToken = object["replyToken"]?.string else {
-      return nil
-    }
-
-    guard let source = object["source"] else {
-      return nil
-    }
-
-    guard validateSignature(body: body, signature: signature) else {
-      return nil
-    }
-
-    let lineBot = LineBot(replyToken: replyToken)
-    lineBot.source = source
-    lineBot.receivedMessage = message
-    return lineBot
+  public func send() {
+    messageType.send(messages: messages, with: client)
   }
 
-  public static func makePush(to: [String]) -> LineBot? {
-    guard to.count > 0 else {
-      return nil
+  public static func validateSignature(body: String, signature: String) -> Bool {
+    guard let hmac = HMAC(using: .sha256, key: LineBot.channelSecret).update(string: body)?.final() else {
+      return false
     }
-    let lineBot = LineBot(pushTo: to)
-    return lineBot
+    let hmacData = Data(hmac)
+    let hmacHex = hmacData.base64EncodedString(options: .endLineWithLineFeed)
+    return hmacHex == signature
   }
 
   public static func configure(accessToken: String, channelSecret: String) {
@@ -81,70 +98,11 @@ public final class LineBot {
   }
 
   public func add(message: LineMessage) {
-    if messages.count < 5 {
-      messages.append(message.toDict())
-    } else {
+    guard messages.count < 5 else {
       print("⚠️ There are already 5 messages in queue, this message cannot be added.")
+      return
     }
-  }
-
-  private static func validateSignature(body: Bytes, signature: String) -> Bool {
-    do {
-      let hash = try HMAC.make(.sha256,
-                               body,
-                               key: LineBot.channelSecret.makeBytes())
-      let hmacData = Data(hash)
-      let hmacHex = hmacData.base64EncodedString(options: .endLineWithLineFeed)
-      return hmacHex == signature
-    } catch {
-      return false
-    }
-  }
-
-  public func sendReply() -> Response {
-    if let replyToken = replyToken, messages.count > 0 {
-      var request = URLRequest(url: URL(string: replyEndpoint)!)
-
-      request.httpMethod = method
-
-      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      request.addValue("Bearer \(LineBot.accessToken)", forHTTPHeaderField: "Authorization")
-
-      let body: [String: Any] = [
-        "replyToken": replyToken,
-        "messages": messages
-      ]
-
-      request.httpBody = try? JSONSerialization.data(withJSONObject: body,
-                                                     options: .prettyPrinted)
-
-      client.sendRequest(request: request)
-    }
-    return Response(status: .ok, body: "reply")
-  }
-
-  public func sendPush() -> Response {
-    if let pushTo = pushTo, messages.count > 0 {
-      var request = URLRequest(url: URL(string: pushEndpoint)!)
-
-      request.httpMethod = method
-
-      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      request.addValue("Bearer \(LineBot.accessToken)", forHTTPHeaderField: "Authorization")
-
-      for to in pushTo {
-        let body: [String: Any] = [
-          "to": to,
-          "messages": messages
-        ]
-
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body,
-                                                       options: .prettyPrinted)
-
-        client.sendRequest(request: request)
-      }
-    }
-    return Response(status: .ok, body: "reply")
+    messages.append(message.toDict())
   }
 
 }

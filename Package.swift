@@ -1,9 +1,16 @@
-// swift-tools-version:3.0
+// swift-tools-version:4.0
 import PackageDescription
 
 let package = Package(
   name: "LineBot",
+  products: [
+    .library(name: "LineBot", targets: ["LineBot"]),
+    ],
   dependencies: [
-    .Package(url: "https://github.com/vapor/vapor.git", majorVersion: 2),
+    .package(url: "https://github.com/IBM-Swift/BlueCryptor.git", from: "1.0.0")
+  ],
+  targets: [
+    .target(name: "LineBot", dependencies: ["Cryptor"]),
   ]
 )
+
