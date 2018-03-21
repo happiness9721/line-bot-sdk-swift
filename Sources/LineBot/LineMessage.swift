@@ -7,118 +7,60 @@
 
 import Foundation
 
-public protocol LineMessage {
-  func toDict() -> [String: Any]
-}
+public enum LineMessage {
 
-public class LineMessageText: LineMessage {
-
-  public var text: String
-
-  public init(text: String) {
-    self.text = text
-  }
-
-  public func toDict() -> [String : Any] {
-    return ["type": "text",
-            "text": text]
-  }
+  case text(text: String)
+  case sticker(packageId: String, stickerId: String)
+  case image(originalContentUrl: String, previewImageUrl: String)
+  case video(originalContentUrl: String, previewImageUrl: String)
+  case audio(originalContentUrl: String, duration: Int)
+  case location(title: String, address: String, latitude: Double, longitude: Double)
+  case imagemap(baseUrl: String, altText: String, baseSize: CGSize, actions: [LineImagemapAction])
 
 }
 
-public class LineMessageSticker: LineMessage {
+internal extension LineMessage {
 
-  public var packageId: String
-  public var stickerId: String
-
-  public init(packageId: String, stickerId: String) {
-    self.packageId = packageId
-    self.stickerId = stickerId
+  internal func toDict() -> [String: Any] {
+    switch self {
+    case .text(let text):
+      return ["type": "text",
+              "text": text]
+    case .sticker(let packageId, let stickerId):
+      return ["type": "sticker",
+              "packageId": packageId,
+              "stickerId": stickerId]
+    case .image(let originalContentUrl, let previewImageUrl):
+      return ["type": "image",
+              "originalContentUrl": originalContentUrl,
+              "previewImageUrl": previewImageUrl]
+    case .video(let originalContentUrl, let previewImageUrl):
+      return ["type": "video",
+              "originalContentUrl": originalContentUrl,
+              "previewImageUrl": previewImageUrl]
+    case .audio(let originalContentUrl, let duration):
+      return ["type": "video",
+              "originalContentUrl": originalContentUrl,
+              "duration": duration]
+    case .location(let title, let address, let latitude, let longitude):
+      return ["type": "location",
+              "title": title,
+              "address": address,
+              "latitude": latitude,
+              "longitude": longitude]
+    case .imagemap(let baseUrl, let altText, let baseSize, let actions):
+      var mapActions = [[String: Any]]()
+      for action in actions {
+        mapActions.append(action.toDict())
+      }
+      return ["type": "imagemap",
+              "baseUrl": baseUrl,
+              "altText": altText,
+              "baseSize": ["height": baseSize.height,
+                           "width": baseSize.width],
+              "actions": mapActions]
+    }
   }
 
-  public func toDict() -> [String : Any] {
-    return ["type": "sticker",
-            "packageId": packageId,
-            "stickerId": stickerId]
-  }
-
-}
-
-public class LineMessageImage: LineMessage {
-
-  public var originalContentUrl: String
-  public var previewImageUrl: String
-
-  public init(originalContentUrl: String, previewImageUrl: String) {
-    self.originalContentUrl = originalContentUrl
-    self.previewImageUrl = previewImageUrl
-  }
-
-  public func toDict() -> [String : Any] {
-    return ["type": "image",
-            "originalContentUrl": originalContentUrl,
-            "previewImageUrl": previewImageUrl]
-  }
-
-}
-
-public class LineMessageVideo: LineMessage {
-
-  public var originalContentUrl: String
-  public var previewImageUrl: String
-
-  public init(originalContentUrl: String, previewImageUrl: String) {
-    self.originalContentUrl = originalContentUrl
-    self.previewImageUrl = previewImageUrl
-  }
-
-  public func toDict() -> [String : Any] {
-    return ["type": "video",
-            "originalContentUrl": originalContentUrl,
-            "previewImageUrl": previewImageUrl]
-  }
-
-}
-
-public class LineMessageAudio: LineMessage {
-
-  public var originalContentUrl: String
-  public var duration: Int
-
-  public init(originalContentUrl: String, duration: Int) {
-    self.originalContentUrl = originalContentUrl
-    self.duration = duration
-  }
-
-  public func toDict() -> [String : Any] {
-    return ["type": "video",
-            "originalContentUrl": originalContentUrl,
-            "duration": duration]
-  }
-
-}
-
-public class LineMessageLocation: LineMessage {
-
-  public var title: String
-  public var address: String
-  public var latitude: Double
-  public var longitude: Double
-
-  public init(title: String, address: String, latitude: Double, longitude: Double) {
-    self.title = title
-    self.address = address
-    self.latitude = latitude
-    self.longitude = longitude
-  }
-
-  public func toDict() -> [String : Any] {
-    return ["type": "location",
-            "title": title,
-            "address": address,
-            "latitude": latitude,
-            "longitude": longitude]
-  }
-  
 }
 

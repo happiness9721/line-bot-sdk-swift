@@ -9,100 +9,45 @@ import Foundation
 import Cryptor
 
 public final class LineBot {
-  public enum MessageType {
-    case reply(token: String)
-    case push(to: [String])
-
-    private var endPoint: String {
-      switch self {
-      case .reply:
-        return "https://api.line.me/v2/bot/message/reply"
-      case .push:
-        return "https://api.line.me/v2/bot/message/push"
-      }
-    }
-
-    private var method: String {
-      return "POST"
-    }
-
-    private func request(body: [String: Any]) -> URLRequest {
-      var request = URLRequest(url: URL(string: endPoint)!)
-
-      request.httpMethod = method
-
-      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      request.addValue("Bearer \(LineBot.accessToken)", forHTTPHeaderField: "Authorization")
-      request.httpBody = try? JSONSerialization.data(withJSONObject: body,
-                                                     options: .prettyPrinted)
-      return request
-    }
-
-    fileprivate func send(messages: [[String: Any]], with client: HTTPClient) {
-      switch self {
-      case .reply(let token):
-        guard messages.count > 0 else {
-          print("⚠️ There are no message in queue, this reply cannot be sent.")
-          return
-        }
-        let body: [String: Any] = [
-          "replyToken": token,
-          "messages": messages
-        ]
-        client.sendRequest(request: request(body: body))
-      case .push(let pushTo):
-        guard messages.count > 0 else {
-          print("⚠️ There are no message in queue, this push cannot be sent.")
-          return
-        }
-        for to in pushTo {
-          let body: [String: Any] = [
-            "to": to,
-            "messages": messages
-          ]
-          client.sendRequest(request: request(body: body))
-        }
-      }
-    }
-  }
-
-  private static var accessToken = ""
-  private static var channelSecret = ""
-  private let messageType: MessageType
-  private var messages = [[String: Any]]()
+  
+  internal let accessToken: String
+  internal let channelSecret: String
 
   private var client: HTTPClient {
     return HTTPClient()
   }
 
-  public init(messageType: MessageType) {
-    self.messageType = messageType
+  public init(accessToken: String, channelSecret: String) {
+    self.accessToken = accessToken
+    self.channelSecret = channelSecret
   }
 
-  public func send() {
-    messageType.send(messages: messages, with: client)
+  public func receive(body: String, signature: String) -> LineWebhook? {
+    guard validateSignature(body: body, signature: signature) else {
+      return nil
+    }
+    guard let data = body.data(using: .utf8) else {
+      return nil
+    }
+    return try? JSONDecoder().decode(LineWebhook.self, from: data)
   }
 
-  public static func validateSignature(body: String, signature: String) -> Bool {
-    guard let hmac = HMAC(using: .sha256, key: LineBot.channelSecret).update(string: body)?.final() else {
+  public func send(by sender: LineSender, messages: [LineMessage]) {
+    guard messages.count < 5 else {
+      print("⚠️ Send failed. There are over 5 messages in array.")
+      return
+    }
+    let map = messages.map{ $0.toDict() }
+    sender.send(messages: map, accessToken: accessToken, client: client)
+  }
+
+  private func validateSignature(body: String, signature: String) -> Bool {
+    guard let hmac = HMAC(using: .sha256, key: channelSecret).update(string: body)?.final() else {
       return false
     }
     let hmacData = Data(hmac)
     let hmacHex = hmacData.base64EncodedString(options: .endLineWithLineFeed)
     return hmacHex == signature
-  }
-
-  public static func configure(accessToken: String, channelSecret: String) {
-    self.accessToken = accessToken
-    self.channelSecret = channelSecret
-  }
-
-  public func add(message: LineMessage) {
-    guard messages.count < 5 else {
-      print("⚠️ There are already 5 messages in queue, this message cannot be added.")
-      return
-    }
-    messages.append(message.toDict())
   }
 
 }
