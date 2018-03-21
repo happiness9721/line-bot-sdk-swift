@@ -27,13 +27,14 @@ class LineMessageTests : XCTestCase {
   func testImagemap() {
     let message = LineMessage.imagemap(baseUrl: "https://example.com/bot/images/rm001",
                                        altText: "This is an imagemap",
-                                       baseSize: CGSize(width: 1040, height: 1040),
+                                       width: 1040,
+                                       height: 1040,
                                        actions: [.uri(label: nil,
                                                       linkUri: "https://example.com/",
-                                                      area: CGRect(x: 0, y: 0, width: 520, height: 1040)),
+                                                      area: LineArea(x: 0, y: 0, width: 520, height: 1040)),
                                                  .message(label: nil,
                                                           text: "Hello",
-                                                          area: CGRect(x: 520, y: 0, width: 520, height: 1040))])
+                                                          area: LineArea(x: 520, y: 0, width: 520, height: 1040))])
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
                                                   options: .prettyPrinted)
 
@@ -67,11 +68,16 @@ class LineMessageTests : XCTestCase {
           ]
         ]
       ]
-    ] as [String : Any]
+      ] as [String : Any]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
                                                    options: .prettyPrinted)
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
 
   }
+
+  static let allTests = [
+    ("testText", testText),
+    ("testImagemap", testImagemap)
+  ]
 }

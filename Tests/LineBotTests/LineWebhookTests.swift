@@ -74,4 +74,8 @@ class LineWebhookTests: XCTestCase {
     }
   }
 
+  static let allTests = [
+    ("testDecode", testDecode)
+  ]
+
 }

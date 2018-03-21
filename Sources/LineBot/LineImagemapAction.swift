@@ -9,8 +9,8 @@ import Foundation
 
 public enum LineImagemapAction {
 
-  case uri(label: String?, linkUri: String, area: CGRect)
-  case message(label: String?, text: String, area: CGRect)
+  case uri(label: String?, linkUri: String, area: LineArea)
+  case message(label: String?, text: String, area: LineArea)
 
 }
 
@@ -23,16 +23,16 @@ internal extension LineImagemapAction {
       action["type"] = "uri"
       action["label"] = label
       action["linkUri"] = linkUri
-      action["area"] = ["x": area.origin.x,
-                        "y": area.origin.y,
+      action["area"] = ["x": area.x,
+                        "y": area.y,
                         "width": area.width,
                         "height": area.height]
     case .message(let label, let text, let area):
       action["type"] = "message"
       action["label"] = label
       action["text"] = text
-      action["area"] = ["x": area.origin.x,
-                        "y": area.origin.y,
+      action["area"] = ["x": area.x,
+                        "y": area.y,
                         "width": area.width,
                         "height": area.height]
     }
