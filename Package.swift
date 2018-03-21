@@ -11,6 +11,7 @@ let package = Package(
   ],
   targets: [
     .target(name: "LineBot", dependencies: ["Cryptor"]),
+    .testTarget(name: "LineBotTests", dependencies: ["LineBot"]),
   ]
 )
 
