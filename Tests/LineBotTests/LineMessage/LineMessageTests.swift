@@ -12,14 +12,14 @@ class LineMessageTests : XCTestCase {
   func testDecodeText() {
     let message = LineMessage.text(text: "Hello, world")
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "text",
       "text": "Hello, world"
     ]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -27,7 +27,7 @@ class LineMessageTests : XCTestCase {
   func testDecodeSticker() {
     let message = LineMessage.sticker(packageId: "1", stickerId: "1")
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "sticker",
@@ -35,7 +35,7 @@ class LineMessageTests : XCTestCase {
       "stickerId": "1"
     ]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -44,7 +44,7 @@ class LineMessageTests : XCTestCase {
     let message = LineMessage.image(originalContentUrl: "https://example.com/original.jpg",
                                     previewImageUrl: "https://example.com/preview.jpg")
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "image",
@@ -52,7 +52,7 @@ class LineMessageTests : XCTestCase {
       "previewImageUrl": "https://example.com/preview.jpg"
     ]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -61,7 +61,7 @@ class LineMessageTests : XCTestCase {
     let message = LineMessage.video(originalContentUrl: "https://example.com/original.mp4",
                                     previewImageUrl: "https://example.com/preview.jpg")
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "video",
@@ -69,7 +69,7 @@ class LineMessageTests : XCTestCase {
       "previewImageUrl": "https://example.com/preview.jpg"
     ]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -78,7 +78,7 @@ class LineMessageTests : XCTestCase {
     let message = LineMessage.audio(originalContentUrl: "https://example.com/original.m4a",
                                     duration: 60000)
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "audio",
@@ -86,7 +86,7 @@ class LineMessageTests : XCTestCase {
       "duration": 60000
     ] as [String : Any]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -97,7 +97,7 @@ class LineMessageTests : XCTestCase {
                                        latitude: 35.65910807942215,
                                        longitude: 139.70372892916203)
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "location",
@@ -107,7 +107,7 @@ class LineMessageTests : XCTestCase {
       "longitude": 139.70372892916203
     ] as [String : Any]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -124,7 +124,7 @@ class LineMessageTests : XCTestCase {
                                                           text: "Hello",
                                                           area: LineArea(x: 520, y: 0, width: 520, height: 1040))])
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "imagemap",
@@ -158,7 +158,7 @@ class LineMessageTests : XCTestCase {
       ]
       ] as [String : Any]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
 
@@ -179,7 +179,7 @@ class LineMessageTests : XCTestCase {
     let message = LineMessage.template(altText: "This is a buttons template",
                                        template: .button(button))
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "template",
@@ -217,7 +217,7 @@ class LineMessageTests : XCTestCase {
       ]
     ] as [String : Any]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -228,7 +228,7 @@ class LineMessageTests : XCTestCase {
                                                                 actions: [.message(label: "Yes", text: "yes"),
                                                                           .message(label: "No", text: "no")])))
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "template",
@@ -251,7 +251,7 @@ class LineMessageTests : XCTestCase {
       ]
     ] as [String : Any]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -279,7 +279,7 @@ class LineMessageTests : XCTestCase {
                                                                  imageAspectRatio: .rectangle,
                                                                  imageSize: .cover)))
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "template",
@@ -349,7 +349,7 @@ class LineMessageTests : XCTestCase {
       ]
     ] as [String : Any]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
@@ -367,7 +367,7 @@ class LineMessageTests : XCTestCase {
                                                                                       action: .uri(label: "View detail", uri: "http://example.com/page/222"))
                                                                                 ])))
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
-                                                  options: .prettyPrinted)
+                                                  options: [])
 
     let expectedDict = [
       "type": "template",
@@ -403,7 +403,7 @@ class LineMessageTests : XCTestCase {
       ]
     ] as [String : Any]
     let expectedData = try! JSONSerialization.data(withJSONObject: expectedDict,
-                                                   options: .prettyPrinted)
+                                                   options: [])
     XCTAssertEqual(String(data: messageData, encoding: .utf8),
                    String(data: expectedData, encoding: .utf8))
   }
