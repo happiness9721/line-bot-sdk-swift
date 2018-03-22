@@ -16,6 +16,7 @@ public enum LineMessage {
   case audio(originalContentUrl: String, duration: Int)
   case location(title: String, address: String, latitude: Double, longitude: Double)
   case imagemap(baseUrl: String, altText: String, width: Int, height: Int, actions: [LineImagemapAction])
+  case template(altText: String, template: LineTemplate)
 
 }
 
@@ -39,7 +40,7 @@ internal extension LineMessage {
               "originalContentUrl": originalContentUrl,
               "previewImageUrl": previewImageUrl]
     case .audio(let originalContentUrl, let duration):
-      return ["type": "video",
+      return ["type": "audio",
               "originalContentUrl": originalContentUrl,
               "duration": duration]
     case .location(let title, let address, let latitude, let longitude):
@@ -49,16 +50,16 @@ internal extension LineMessage {
               "latitude": latitude,
               "longitude": longitude]
     case .imagemap(let baseUrl, let altText, let width, let height, let actions):
-      var mapActions = [[String: Any]]()
-      for action in actions {
-        mapActions.append(action.toDict())
-      }
       return ["type": "imagemap",
               "baseUrl": baseUrl,
               "altText": altText,
               "baseSize": ["height": height,
                            "width": width],
-              "actions": mapActions]
+              "actions": actions.map { $0.toDict() }]
+    case .template(let altText, let template):
+      return ["type": "template",
+              "altText": altText,
+              "template": template.toDict()]
     }
   }
 

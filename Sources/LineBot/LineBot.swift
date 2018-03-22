@@ -22,11 +22,12 @@ public final class LineBot {
     self.session = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
   }
 
-  public func parseEventsFrom(requestBody: String) -> [LineWebhookEvent]? {
+  public func parseEventsFrom(requestBody: String) -> [LineEvent]? {
     guard let data = requestBody.data(using: .utf8) else {
       return nil
     }
-    return try? JSONDecoder().decode(LineWebhook.self, from: data).events
+    let webhook = try? JSONDecoder().decode(LineWebhook.self, from: data)
+    return webhook?.events
   }
 
   public func validateSignature(content: String, signature: String) -> Bool {
@@ -58,13 +59,13 @@ public extension LineBot {
     session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
-  public func push(userID: String, messages: [LineMessage], completionHandler: ((Data?) -> ())? = nil) {
+  public func push(userId: String, messages: [LineMessage], completionHandler: ((Data?) -> ())? = nil) {
     guard 1...5 ~= messages.count else {
       print("⚠️ Push failed. Messages number invalid.")
       return
     }
     let body: [String: Any] = [
-      "to": userID,
+      "to": userId,
       "messages": messages.map{ $0.toDict() }
     ]
     let request = makeRequest(method: "POST",
@@ -111,9 +112,9 @@ public extension LineBot {
 // Profile
 public extension LineBot {
 
-  public func getProfile(userID: String, completionHandler: ((Data?) -> ())? = nil) {
+  public func getProfile(userId: String, completionHandler: ((Data?) -> ())? = nil) {
     let request = makeRequest(method: "GET",
-                              path: "/bot/profile/\(userID)/content")
+                              path: "/bot/profile/\(userId)/content")
     session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
@@ -122,14 +123,14 @@ public extension LineBot {
 // Group
 public extension LineBot {
 
-  public func getProfile(groupID: String, userID: String, completionHandler: ((Data?) -> ())? = nil) {
+  public func getProfile(groupId: String, userId: String, completionHandler: ((Data?) -> ())? = nil) {
     let request = makeRequest(method: "GET",
-                              path: "/bot/group/\(groupID)/member/\(userID)")
+                              path: "/bot/group/\(groupId)/member/\(userId)")
     session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
-  public func getMemberIDs(groupID: String, continuationToken: String? = nil, completionHandler: ((Data?) -> ())? = nil) {
-    var path = "/bot/group/\(groupID)/members/ids"
+  public func getMemberIds(groupId: String, continuationToken: String? = nil, completionHandler: ((Data?) -> ())? = nil) {
+    var path = "/bot/group/\(groupId)/members/ids"
     if let continuationToken = continuationToken {
       path += "?start=\(continuationToken)"
     }
@@ -137,9 +138,9 @@ public extension LineBot {
     session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
-  public func leave(groupID: String, completionHandler: ((Data?) -> ())? = nil) {
+  public func leave(groupId: String, completionHandler: ((Data?) -> ())? = nil) {
     let request = makeRequest(method: "POST",
-                              path: "/bot/group/\(groupID)/leave")
+                              path: "/bot/group/\(groupId)/leave")
     session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
@@ -148,14 +149,14 @@ public extension LineBot {
 // Room
 public extension LineBot {
 
-  public func getProfile(roomID: String, userID: String, completionHandler: ((Data?) -> ())? = nil) {
+  public func getProfile(roomId: String, userId: String, completionHandler: ((Data?) -> ())? = nil) {
     let request = makeRequest(method: "GET",
-                              path: "/bot/room/\(roomID)/member/\(userID)")
+                              path: "/bot/room/\(roomId)/member/\(userId)")
     session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
-  public func getMemberIDs(roomID: String, continuationToken: String? = nil, completionHandler: ((Data?) -> ())? = nil) {
-    var path = "/bot/room/\(roomID)/members/ids"
+  public func getMemberIds(roomId: String, continuationToken: String? = nil, completionHandler: ((Data?) -> ())? = nil) {
+    var path = "/bot/room/\(roomId)/members/ids"
     if let continuationToken = continuationToken {
       path += "?start=\(continuationToken)"
     }
@@ -163,9 +164,9 @@ public extension LineBot {
     session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
-  public func leave(roomID: String, completionHandler: ((Data?) -> ())? = nil) {
+  public func leave(roomId: String, completionHandler: ((Data?) -> ())? = nil) {
     let request = makeRequest(method: "POST",
-                              path: "/bot/room/\(roomID)/leave")
+                              path: "/bot/room/\(roomId)/leave")
     session.sendRequest(request: request, completionHandler: completionHandler)
   }
 

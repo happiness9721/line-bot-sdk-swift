@@ -4,8 +4,9 @@ import XCTest
 @testable import LineBotTests
 
 XCTMain([
+    testCase(LineBotTests.allTests),
     testCase(LineMessageTests.allTests),
-    testCase(LineWebhookMessageTests.allTests),
+    testCase(LineEventMessageTests.allTests),
     testCase(LineWebhookTests.allTests),
 ])
 

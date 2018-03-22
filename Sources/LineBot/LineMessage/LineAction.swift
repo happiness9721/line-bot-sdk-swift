@@ -27,22 +27,22 @@ public enum LineAction {
 internal extension LineAction {
 
   internal func toDict() -> [String: Any] {
-    var action = [String: Any]()
+    var dict = [String: Any]()
     switch self {
     case .postback(let label, let data, let displayText, let text):
-      action["type"] = "postback"
-      action["label"] = label
-      action["data"] = data
-      action["displayText"] = displayText
-      action["text"] = text
+      dict["type"] = "postback"
+      dict["label"] = label
+      dict["data"] = data
+      dict["displayText"] = displayText
+      dict["text"] = text
     case .message(let label, let text):
-      action["type"] = "message"
-      action["label"] = label
-      action["text"] = text
+      dict["type"] = "message"
+      dict["label"] = label
+      dict["text"] = text
     case .uri(let label, let uri):
-      action["type"] = "uri"
-      action["label"] = label
-      action["uri"] = uri
+      dict["type"] = "uri"
+      dict["label"] = label
+      dict["uri"] = uri
     case .datetimePicker(let label, let data, let mode, let initial, let max, let min):
       let dateFormatter = DateFormatter()
       switch mode {
@@ -53,21 +53,21 @@ internal extension LineAction {
       case .datetime:
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
       }
-      action["type"] = "datetimepicker"
-      action["label"] = label
-      action["data"] = data
-      action["mode"] = mode.rawValue
+      dict["type"] = "datetimepicker"
+      dict["label"] = label
+      dict["data"] = data
+      dict["mode"] = mode.rawValue
       if let initial = initial {
-        action["initial"] = dateFormatter.string(from: initial)
+        dict["initial"] = dateFormatter.string(from: initial)
       }
       if let max = max {
-        action["max"] = dateFormatter.string(from: max)
+        dict["max"] = dateFormatter.string(from: max)
       }
       if let min = min {
-        action["min"] = dateFormatter.string(from: min)
+        dict["min"] = dateFormatter.string(from: min)
       }
     }
-    return action
+    return dict
   }
 
 }

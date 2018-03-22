@@ -8,8 +8,8 @@
 import Foundation
 
 public struct LineArea {
-  var x: Int
-  var y: Int
-  var width: Int
-  var height: Int
+  public var x: Int
+  public var y: Int
+  public var width: Int
+  public var height: Int
 }

@@ -1,5 +1,5 @@
 //
-//  LineWebhookEvent.swift
+//  LineEvent.swift
 //  LineBot
 //
 //  Created by happiness9721 on 2018/3/20.
@@ -7,19 +7,19 @@
 
 import Foundation
 
-public enum LineWebhookEvent {
+public enum LineEvent {
 
-  case message(_: LineWebhookEventBase.Message)
-  case follow(_: LineWebhookEventBase.Follow)
-  case unfollow(_: LineWebhookEventBase.Unfollow)
-  case join(_: LineWebhookEventBase.Join)
-  case leave(_: LineWebhookEventBase.Leave)
-  case postback(_: LineWebhookEventBase.Postback)
-  case beacon(_: LineWebhookEventBase.Beacon)
+  case message(_: LineEventBase.Message)
+  case follow(_: LineEventBase.Follow)
+  case unfollow(_: LineEventBase.Unfollow)
+  case join(_: LineEventBase.Join)
+  case leave(_: LineEventBase.Leave)
+  case postback(_: LineEventBase.Postback)
+  case beacon(_: LineEventBase.Beacon)
 
 }
 
-public class LineWebhookEventBase {
+public class LineEventBase {
 
   public let timestamp: Double
   public let source: Source
@@ -29,35 +29,20 @@ public class LineWebhookEventBase {
     source = try container.decode(Source.self, forKey: DataKey(stringValue: "source"))
   }
 
-  public class Message: LineWebhookEventBase {
+  public class Message: LineEventBase {
 
-    public let message: LineWebhookMessage
+    public let message: LineEventMessage
     public let replyToken: String
 
     internal override init(from container: KeyedDecodingContainer<DataKey>) throws {
-      message = try container.decode(LineWebhookMessage.self, forKey: DataKey(stringValue: "message"))
+      message = try container.decode(LineEventMessage.self, forKey: DataKey(stringValue: "message"))
       replyToken = try container.decode(String.self, forKey: DataKey(stringValue: "replyToken"))
       try super.init(from: container)
     }
 
   }
 
-  public class Follow: LineWebhookEventBase {
-
-    public let replyToken: String
-
-    internal override init(from container: KeyedDecodingContainer<DataKey>) throws {
-      replyToken = try container.decode(String.self, forKey: DataKey(stringValue: "replyToken"))
-      try super.init(from: container)
-    }
-
-  }
-
-  public class Unfollow: LineWebhookEventBase {
-
-  }
-
-  public class Join: LineWebhookEventBase {
+  public class Follow: LineEventBase {
 
     public let replyToken: String
 
@@ -68,11 +53,26 @@ public class LineWebhookEventBase {
 
   }
 
-  public class Leave: LineWebhookEventBase {
+  public class Unfollow: LineEventBase {
 
   }
 
-  public class Postback: LineWebhookEventBase {
+  public class Join: LineEventBase {
+
+    public let replyToken: String
+
+    internal override init(from container: KeyedDecodingContainer<DataKey>) throws {
+      replyToken = try container.decode(String.self, forKey: DataKey(stringValue: "replyToken"))
+      try super.init(from: container)
+    }
+
+  }
+
+  public class Leave: LineEventBase {
+
+  }
+
+  public class Postback: LineEventBase {
 
     public let replyToken: String
     public let data: String
@@ -95,7 +95,7 @@ public class LineWebhookEventBase {
 
   }
 
-  public class Beacon: LineWebhookEventBase {
+  public class Beacon: LineEventBase {
 
     public let replyToken: String
     public let hwid: String

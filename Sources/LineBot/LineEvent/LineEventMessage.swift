@@ -1,5 +1,5 @@
 //
-//  LineWebhookMessage.swift
+//  LineEventMessage.swift
 //  LineBot
 //
 //  Created by happiness9721 on 2018/3/19.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum LineWebhookMessage: Decodable {
+public enum LineEventMessage: Decodable {
 
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: TypeKey.self)

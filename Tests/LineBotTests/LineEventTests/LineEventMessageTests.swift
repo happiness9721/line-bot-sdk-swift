@@ -1,5 +1,5 @@
 //
-//  LineWebhookMessageTests.swift
+//  LineEventMessageTests.swift
 //  LineBotTests
 //
 //  Created by happiness9721 on 2018/3/20.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import LineBot
 
-class LineWebhookMessageTests: XCTestCase {
+class LineEventMessageTests: XCTestCase {
 
   func testDecodeText() {
     let json =
@@ -20,7 +20,7 @@ class LineWebhookMessageTests: XCTestCase {
     }
     """
     do {
-      let message = try JSONDecoder().decode(LineWebhookMessage.self, from: json.data(using: .utf8)!)
+      let message = try JSONDecoder().decode(LineEventMessage.self, from: json.data(using: .utf8)!)
       switch message {
       case .text(let text):
         XCTAssertEqual(text.id, "325708")
@@ -43,7 +43,7 @@ class LineWebhookMessageTests: XCTestCase {
     }
     """
     do {
-      let message = try JSONDecoder().decode(LineWebhookMessage.self, from: json.data(using: .utf8)!)
+      let message = try JSONDecoder().decode(LineEventMessage.self, from: json.data(using: .utf8)!)
       switch message {
       case .image(let content):
         XCTAssertEqual(content.id, "325708")

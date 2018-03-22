@@ -17,26 +17,26 @@ public enum LineImagemapAction {
 internal extension LineImagemapAction {
 
   internal func toDict() -> [String: Any] {
-    var action = [String: Any]()
+    var dict = [String: Any]()
     switch self {
     case .uri(let label, let linkUri, let area):
-      action["type"] = "uri"
-      action["label"] = label
-      action["linkUri"] = linkUri
-      action["area"] = ["x": area.x,
-                        "y": area.y,
-                        "width": area.width,
-                        "height": area.height]
+      dict["type"] = "uri"
+      dict["label"] = label
+      dict["linkUri"] = linkUri
+      dict["area"] = ["x": area.x,
+                      "y": area.y,
+                      "width": area.width,
+                      "height": area.height]
     case .message(let label, let text, let area):
-      action["type"] = "message"
-      action["label"] = label
-      action["text"] = text
-      action["area"] = ["x": area.x,
-                        "y": area.y,
-                        "width": area.width,
-                        "height": area.height]
+      dict["type"] = "message"
+      dict["label"] = label
+      dict["text"] = text
+      dict["area"] = ["x": area.x,
+                      "y": area.y,
+                      "width": area.width,
+                      "height": area.height]
     }
-    return action
+    return dict
   }
   
 }

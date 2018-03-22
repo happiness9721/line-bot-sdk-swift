@@ -18,10 +18,10 @@ internal struct DataKey: CodingKey {
 
 internal struct LineWebhook: Decodable {
 
-  internal let events: [LineWebhookEvent]
+  internal let events: [LineEvent]
 
   internal init(from decoder: Decoder) throws {
-    var events = [LineWebhookEvent]()
+    var events = [LineEvent]()
     let container = try decoder.container(keyedBy: DataKey.self)
     var unkeyedContainer = try container.nestedUnkeyedContainer(forKey: DataKey(stringValue: "events"))
     while !unkeyedContainer.isAtEnd {
@@ -29,19 +29,19 @@ internal struct LineWebhook: Decodable {
       let type = try event.decode(EventType.self, forKey: DataKey(stringValue: "type"))
       switch type {
       case .message:
-        try events.append(LineWebhookEvent.message(LineWebhookEventBase.Message(from: event)))
+        try events.append(LineEvent.message(LineEventBase.Message(from: event)))
       case .follow:
-        try events.append(LineWebhookEvent.follow(LineWebhookEventBase.Follow(from: event)))
+        try events.append(LineEvent.follow(LineEventBase.Follow(from: event)))
       case .unfollow:
-        try events.append(LineWebhookEvent.unfollow(LineWebhookEventBase.Unfollow(from: event)))
+        try events.append(LineEvent.unfollow(LineEventBase.Unfollow(from: event)))
       case .join:
-        try events.append(LineWebhookEvent.join(LineWebhookEventBase.Join(from: event)))
+        try events.append(LineEvent.join(LineEventBase.Join(from: event)))
       case .leave:
-        try events.append(LineWebhookEvent.leave(LineWebhookEventBase.Leave(from: event)))
+        try events.append(LineEvent.leave(LineEventBase.Leave(from: event)))
       case .postback:
-        try events.append(LineWebhookEvent.postback(LineWebhookEventBase.Postback(from: event)))
+        try events.append(LineEvent.postback(LineEventBase.Postback(from: event)))
       case .beacon:
-        try events.append(LineWebhookEvent.beacon(LineWebhookEventBase.Beacon(from: event)))
+        try events.append(LineEvent.beacon(LineEventBase.Beacon(from: event)))
       }
     }
     self.events = events
