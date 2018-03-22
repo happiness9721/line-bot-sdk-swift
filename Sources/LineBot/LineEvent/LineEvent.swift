@@ -122,10 +122,10 @@ public class LineEventBase {
 
   public struct Source: Codable {
 
-    let type: SourceType
-    let userId: String
-    let groupId: String?
-    let roomId: String?
+    public let type: SourceType
+    public let userId: String
+    public let groupId: String?
+    public let roomId: String?
 
   }
 
