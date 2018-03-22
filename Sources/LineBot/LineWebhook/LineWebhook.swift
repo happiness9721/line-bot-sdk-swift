@@ -16,11 +16,11 @@ internal struct DataKey: CodingKey {
   init?(intValue: Int) {return nil}
 }
 
-public struct LineWebhook: Decodable {
+internal struct LineWebhook: Decodable {
 
-  public let events: [LineWebhookEvent]
+  internal let events: [LineWebhookEvent]
 
-  public init(from decoder: Decoder) throws {
+  internal init(from decoder: Decoder) throws {
     var events = [LineWebhookEvent]()
     let container = try decoder.container(keyedBy: DataKey.self)
     var unkeyedContainer = try container.nestedUnkeyedContainer(forKey: DataKey(stringValue: "events"))
