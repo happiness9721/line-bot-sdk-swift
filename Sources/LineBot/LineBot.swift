@@ -45,10 +45,6 @@ public final class LineBot {
 public extension LineBot {
 
   public func reply(token: String, messages: [LineMessage], completionHandler: ((Data?) -> ())? = nil) {
-    guard 1...5 ~= messages.count else {
-      print("⚠️ Reply failed. Messages number invalid.")
-      return
-    }
     let body: [String: Any] = [
       "replyToken": token,
       "messages": messages.map{ $0.toDict() }
@@ -60,10 +56,6 @@ public extension LineBot {
   }
 
   public func push(userId: String, messages: [LineMessage], completionHandler: ((Data?) -> ())? = nil) {
-    guard 1...5 ~= messages.count else {
-      print("⚠️ Push failed. Messages number invalid.")
-      return
-    }
     let body: [String: Any] = [
       "to": userId,
       "messages": messages.map{ $0.toDict() }
@@ -75,10 +67,6 @@ public extension LineBot {
   }
 
   public func multicast(to: [String], messages: [LineMessage], completionHandler: ((Data?) -> ())? = nil) {
-    guard 1...5 ~= messages.count else {
-      print("⚠️ Push failed. Messages number invalid.")
-      return
-    }
     let body: [String: Any] = [
       "to": to,
       "messages": messages.map{ $0.toDict() }
