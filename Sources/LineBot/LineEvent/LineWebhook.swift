@@ -29,19 +29,19 @@ internal struct LineWebhook: Decodable {
       let type = try event.decode(EventType.self, forKey: DataKey(stringValue: "type"))
       switch type {
       case .message:
-        try events.append(LineEvent.message(LineEventBase.Message(from: event)))
+        try events.append(.message(.init(from: event)))
       case .follow:
-        try events.append(LineEvent.follow(LineEventBase.Follow(from: event)))
+        try events.append(.follow(.init(from: event)))
       case .unfollow:
-        try events.append(LineEvent.unfollow(LineEventBase.Unfollow(from: event)))
+        try events.append(.unfollow(.init(from: event)))
       case .join:
-        try events.append(LineEvent.join(LineEventBase.Join(from: event)))
+        try events.append(.join(.init(from: event)))
       case .leave:
-        try events.append(LineEvent.leave(LineEventBase.Leave(from: event)))
+        try events.append(.leave(.init(from: event)))
       case .postback:
-        try events.append(LineEvent.postback(LineEventBase.Postback(from: event)))
+        try events.append(.postback(.init(from: event)))
       case .beacon:
-        try events.append(LineEvent.beacon(LineEventBase.Beacon(from: event)))
+        try events.append(.beacon(.init(from: event)))
       }
     }
     self.events = events
