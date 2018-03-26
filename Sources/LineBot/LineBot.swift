@@ -1,70 +1,171 @@
-import Foundation
+//
+//  LineBot.swift
+//  LineBot
+//
+//  Created by happiness9721 on 2017/10/18.
+//
 
-public class LineBot {
-  private var client: HTTPClient {
-    return CurlHTTPClient()
+import Foundation
+import Cryptor
+
+public final class LineBot {
+  
+  internal let accessToken: String
+  internal let channelSecret: String
+  internal let endPoint: String
+  internal let session: URLSession
+
+  public init(accessToken: String, channelSecret: String, endPoint: String? = nil) {
+    self.accessToken = accessToken
+    self.channelSecret = channelSecret
+    self.endPoint = endPoint ?? "https://api.line.me/v2"
+    self.session = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
   }
-  private static var accessToken = ""
-  public let endpoint = "https://api.line.me/v2/bot/message/reply"
-  public let method = "POST"
-  public let replyToken: String
-  public var messages = [[String: String]]()
-  public var body: [String : Any]? {
-    if messages.count > 0 {
-      let payload: [String: Any] = [
-        "replyToken": replyToken,
-        "messages": messages
-      ]
-      return payload
-    } else {
+
+  public func parseEventsFrom(requestBody: String) -> [LineEvent]? {
+    guard let data = requestBody.data(using: .utf8) else {
       return nil
     }
+    let webhook = try? JSONDecoder().decode(LineWebhook.self, from: data)
+    return webhook?.events
   }
 
-  public init(replyToken: String) {
-    self.replyToken = replyToken
-  }
-
-  public class func configure(with accessToken: String) {
-    self.accessToken = accessToken
-  }
-
-  public func add(message: String) {
-    if messages.count < 5 {
-      messages.append(["type": "text",
-                       "text": message])
+  public func validateSignature(content: String, signature: String) -> Bool {
+    guard let hmac = HMAC(using: .sha256, key: channelSecret).update(string: content)?.final() else {
+      return false
     }
+    let hmacData = Data(hmac)
+    let hmacHex = hmacData.base64EncodedString(options: .endLineWithLineFeed)
+    return hmacHex == signature
   }
 
-  public func add(image: String) {
-    if messages.count < 5 {
-      messages.append(["type": "image",
-                       "originalContentUrl": image,
-                       "previewImageUrl": image])
-    }
+}
+
+// Message
+public extension LineBot {
+
+  public func reply(token: String, messages: [LineMessage], completionHandler: ((Data?) -> ())? = nil) {
+    let body: [String: Any] = [
+      "replyToken": token,
+      "messages": messages.map{ $0.toDict() }
+    ]
+    let request = makeRequest(method: "POST",
+                              path: "/bot/message/reply",
+                              body: body)
+    session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
-  public func add(originalContentUrl: String, previewImageUrl: String) {
-    if messages.count < 5 {
-      messages.append(["type": "image",
-                       "originalContentUrl": originalContentUrl,
-                       "previewImageUrl": previewImageUrl])
-    }
+  public func push(userId: String, messages: [LineMessage], completionHandler: ((Data?) -> ())? = nil) {
+    let body: [String: Any] = [
+      "to": userId,
+      "messages": messages.map{ $0.toDict() }
+    ]
+    let request = makeRequest(method: "POST",
+                              path: "/bot/message/push",
+                              body: body)
+    session.sendRequest(request: request, completionHandler: completionHandler)
   }
 
-  public func send() {
-    if let body = body {
-      var request = URLRequest(url: URL(string: endpoint)!)
+  public func multicast(to: [String], messages: [LineMessage], completionHandler: ((Data?) -> ())? = nil) {
+    let body: [String: Any] = [
+      "to": to,
+      "messages": messages.map{ $0.toDict() }
+    ]
+    let request = makeRequest(method: "POST",
+                              path: "/bot/message/multicast",
+                              body: body)
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
 
-      request.httpMethod = method
+  public func getMessageContent(identifier: String, completionHandler: ((Data?) -> ())? = nil) {
+    let request = makeRequest(method: "GET",
+                              path: "/bot/message/\(identifier)/content")
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
 
-      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      request.addValue("Bearer \(LineBot.accessToken)", forHTTPHeaderField: "Authorization")
+  private func makeRequest(method: String, path: String, body: [String: Any] = [:]) -> URLRequest {
+    var request = URLRequest(url: URL(string: endPoint + path)!)
 
-      request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: .prettyPrinted)
+    request.httpMethod = method
 
-      client.sendRequest(request: request)
+    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+    request.httpBody = try? JSONSerialization.data(withJSONObject: body,
+                                                   options: .prettyPrinted)
+    return request
+  }
+
+}
+
+// Profile
+public extension LineBot {
+
+  public func getProfile(userId: String, completionHandler: ((Data?) -> ())? = nil) {
+    let request = makeRequest(method: "GET",
+                              path: "/bot/profile/\(userId)/content")
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
+
+}
+
+// Group
+public extension LineBot {
+
+  public func getProfile(groupId: String, userId: String, completionHandler: ((Data?) -> ())? = nil) {
+    let request = makeRequest(method: "GET",
+                              path: "/bot/group/\(groupId)/member/\(userId)")
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
+
+  public func getMemberIds(groupId: String, continuationToken: String? = nil, completionHandler: ((Data?) -> ())? = nil) {
+    var path = "/bot/group/\(groupId)/members/ids"
+    if let continuationToken = continuationToken {
+      path += "?start=\(continuationToken)"
     }
+    let request = makeRequest(method: "GET", path: path)
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
+
+  public func leave(groupId: String, completionHandler: ((Data?) -> ())? = nil) {
+    let request = makeRequest(method: "POST",
+                              path: "/bot/group/\(groupId)/leave")
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
+
+}
+
+// Room
+public extension LineBot {
+
+  public func getProfile(roomId: String, userId: String, completionHandler: ((Data?) -> ())? = nil) {
+    let request = makeRequest(method: "GET",
+                              path: "/bot/room/\(roomId)/member/\(userId)")
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
+
+  public func getMemberIds(roomId: String, continuationToken: String? = nil, completionHandler: ((Data?) -> ())? = nil) {
+    var path = "/bot/room/\(roomId)/members/ids"
+    if let continuationToken = continuationToken {
+      path += "?start=\(continuationToken)"
+    }
+    let request = makeRequest(method: "GET", path: path)
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
+
+  public func leave(roomId: String, completionHandler: ((Data?) -> ())? = nil) {
+    let request = makeRequest(method: "POST",
+                              path: "/bot/room/\(roomId)/leave")
+    session.sendRequest(request: request, completionHandler: completionHandler)
+  }
+
+}
+
+fileprivate extension URLSession {
+  fileprivate func sendRequest(request: URLRequest, completionHandler: ((Data?) -> ())? = nil) {
+    let dataTask = self.dataTask(with: request) { data, response, error in
+      completionHandler?(data)
+    }
+    dataTask.resume()
   }
 }
 
