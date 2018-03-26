@@ -9,13 +9,13 @@ import Foundation
 
 public enum LineEvent {
 
-  case message(_: LineEventBase.Message)
-  case follow(_: LineEventBase.Follow)
-  case unfollow(_: LineEventBase.Unfollow)
-  case join(_: LineEventBase.Join)
-  case leave(_: LineEventBase.Leave)
-  case postback(_: LineEventBase.Postback)
-  case beacon(_: LineEventBase.Beacon)
+  case message(_: LineEventBase.MessageEvent)
+  case follow(_: LineEventBase.FollowEvent)
+  case unfollow(_: LineEventBase.UnfollowEvent)
+  case join(_: LineEventBase.JoinEvent)
+  case leave(_: LineEventBase.LeaveEvent)
+  case postback(_: LineEventBase.PostbackEvent)
+  case beacon(_: LineEventBase.BeaconEvent)
 
 }
 
@@ -29,10 +29,10 @@ public class LineEventBase {
     source = try container.decode(Source.self, forKey: DataKey(stringValue: "source"))
   }
 
-  public class Message: LineEventBase {
+  public class MessageEvent: LineEventBase {
 
-    public let message: LineEventMessage
     public let replyToken: String
+    public let message: LineEventMessage
 
     internal override init(from container: KeyedDecodingContainer<DataKey>) throws {
       message = try container.decode(LineEventMessage.self, forKey: DataKey(stringValue: "message"))
@@ -42,7 +42,7 @@ public class LineEventBase {
 
   }
 
-  public class Follow: LineEventBase {
+  public class FollowEvent: LineEventBase {
 
     public let replyToken: String
 
@@ -53,11 +53,11 @@ public class LineEventBase {
 
   }
 
-  public class Unfollow: LineEventBase {
+  public class UnfollowEvent: LineEventBase {
 
   }
 
-  public class Join: LineEventBase {
+  public class JoinEvent: LineEventBase {
 
     public let replyToken: String
 
@@ -68,21 +68,26 @@ public class LineEventBase {
 
   }
 
-  public class Leave: LineEventBase {
+  public class LeaveEvent: LineEventBase {
 
   }
 
-  public class Postback: LineEventBase {
+  public class PostbackEvent: LineEventBase {
 
     public let replyToken: String
-    public let data: String
-    public let params: LineWebhookPostbackParams?
+    public let postback: Postback
 
     internal override init(from container: KeyedDecodingContainer<DataKey>) throws {
       replyToken = try container.decode(String.self, forKey: DataKey(stringValue: "replyToken"))
-      data = try container.decode(String.self, forKey: DataKey(stringValue: "data"))
-      params = try container.decode(LineWebhookPostbackParams.self, forKey: DataKey(stringValue: "params"))
+      postback = try container.decode(Postback.self, forKey: DataKey(stringValue: "postback"))
       try super.init(from: container)
+    }
+
+    public struct Postback: Codable {
+
+      public let data: String
+      public let params: LineWebhookPostbackParams?
+
     }
 
     public struct LineWebhookPostbackParams: Codable {
@@ -95,7 +100,7 @@ public class LineEventBase {
 
   }
 
-  public class Beacon: LineEventBase {
+  public class BeaconEvent: LineEventBase {
 
     public let replyToken: String
     public let hwid: String

@@ -14,19 +14,19 @@ public enum LineEventMessage: Decodable {
     let type = try container.decode(MessageType.self, forKey: .type)
     switch type {
     case .text:
-      self = try .text(Text(from: decoder))
+      self = try .text(.init(from: decoder))
     case .image:
-      self = try .image(Content(from: decoder))
+      self = try .image(.init(from: decoder))
     case .video:
-      self = try .video(Content(from: decoder))
+      self = try .video(.init(from: decoder))
     case .audio:
-      self = try .audio(Content(from: decoder))
+      self = try .audio(.init(from: decoder))
     case .file:
-      self = try .file(File(from: decoder))
+      self = try .file(.init(from: decoder))
     case .location:
-      self = try .location(Location(from: decoder))
+      self = try .location(.init(from: decoder))
     case .sticker:
-      self = try .sticker(Sticker(from: decoder))
+      self = try .sticker(.init(from: decoder))
     }
   }
 
