@@ -17,7 +17,7 @@ public enum LineDatetimePickerMode: String {
 
 public enum LineAction {
 
-  case postback(label: String?, data: String, displayText: String?, text: String?)
+  case postback(label: String?, data: String, displayText: String?)
   case message(label: String?, text: String)
   case uri(label: String?, uri: String)
   case datetimePicker(label: String?, data: String, mode: LineDatetimePickerMode, initial: Date?, max: Date?, min: Date?)
@@ -29,12 +29,11 @@ internal extension LineAction {
   internal func toDict() -> [String: Any] {
     var dict = [String: Any]()
     switch self {
-    case .postback(let label, let data, let displayText, let text):
+    case .postback(let label, let data, let displayText):
       dict["type"] = "postback"
       dict["label"] = label
       dict["data"] = data
       dict["displayText"] = displayText
-      dict["text"] = text
     case .message(let label, let text):
       dict["type"] = "message"
       dict["label"] = label

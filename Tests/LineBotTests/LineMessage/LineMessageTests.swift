@@ -166,8 +166,8 @@ class LineMessageTests : XCTestCase {
 
   func testDecodeTemplateButtons() {
     var button = LineTemplate.Button(text: "Please select",
-                                     actions: [.postback(label: "Buy", data: "action=buy&itemid=123", displayText: nil, text: nil),
-                                               .postback(label: "Add to cart", data: "action=add&itemid=123", displayText: nil, text: nil),
+                                     actions: [.postback(label: "Buy", data: "action=buy&itemid=123", displayText: nil),
+                                               .postback(label: "Add to cart", data: "action=add&itemid=123", displayText: nil),
                                                .uri(label: "View detail", uri: "http://example.com/page/123")])
     button.thumbnailImageUrl = "https://example.com/bot/images/image.jpg"
     button.imageAspectRatio = .rectangle
@@ -263,16 +263,16 @@ class LineMessageTests : XCTestCase {
                                                      title: "this is menu",
                                                      text: "description",
                                                      defaultAction: .uri(label: "View detail", uri: "http://example.com/page/123"),
-                                                     actions: [.postback(label: "Buy", data: "action=buy&itemid=111", displayText: nil, text: nil),
-                                                               .postback(label: "Add to cart", data: "action=add&itemid=111", displayText: nil, text: nil),
+                                                     actions: [.postback(label: "Buy", data: "action=buy&itemid=111", displayText: nil),
+                                                               .postback(label: "Add to cart", data: "action=add&itemid=111", displayText: nil),
                                                                .uri(label: "View detail", uri: "http://example.com/page/111")]))
     columns.append(LineTemplate.Carousel.Column.init(thumbnailImageUrl: "https://example.com/bot/images/item2.jpg",
                                                      imageBackgroundColor: "#000000",
                                                      title: "this is menu",
                                                      text: "description",
                                                      defaultAction: .uri(label: "View detail", uri: "http://example.com/page/222"),
-                                                     actions: [.postback(label: "Buy", data: "action=buy&itemid=222", displayText: nil, text: nil),
-                                                               .postback(label: "Add to cart", data: "action=add&itemid=222", displayText: nil, text: nil),
+                                                     actions: [.postback(label: "Buy", data: "action=buy&itemid=222", displayText: nil),
+                                                               .postback(label: "Add to cart", data: "action=add&itemid=222", displayText: nil),
                                                                .uri(label: "View detail", uri: "http://example.com/page/222")]))
     let message = LineMessage.template(altText: "this is a carousel template",
                                        template: .carousel(.init(columns: columns,
@@ -359,8 +359,7 @@ class LineMessageTests : XCTestCase {
                                        template: .imageCarousel(.init(columns: [.init(imageUrl: "https://example.com/bot/images/item1.jpg",
                                                                                       action: .postback(label: "Buy",
                                                                                                         data: "action=buy&itemid=111",
-                                                                                                        displayText: nil,
-                                                                                                        text: nil)),
+                                                                                                        displayText: nil)),
                                                                                 .init(imageUrl: "https://example.com/bot/images/item2.jpg",
                                                                                       action: .message(label: "Yes", text: "yes")),
                                                                                 .init(imageUrl: "https://example.com/bot/images/item3.jpg",
