@@ -92,9 +92,9 @@ public class LineEventBase {
 
     public struct LineWebhookPostbackParams: Codable {
 
-      public let date: String
-      public let time: String
-      public let datetime: String
+      public let date: String?
+      public let time: String?
+      public let datetime: String?
 
     }
 
