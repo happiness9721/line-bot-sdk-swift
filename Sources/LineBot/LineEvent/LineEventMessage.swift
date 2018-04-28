@@ -39,36 +39,48 @@ public enum LineEventMessage: Decodable {
   case sticker(_: Sticker)
 
   public struct Text: Codable {
+
     public let id: String
     public let text: String
+
   }
 
   public struct Content: Codable {
+
     public let id: String
+
   }
 
   public struct File: Codable {
+
     public let id: String
     public let fileName: String
     public let fileSize: String
+
   }
 
   public struct Location: Codable {
+
     public let id: String
     public let title: String?
     public let address: String?
     public let latitude: Double?
     public let longitude: Double?
+
   }
 
   public struct Sticker: Codable {
+
     public let id: String
     public let packageId: String?
     public let stickerId: String?
+
   }
 
   private enum TypeKey: String, CodingKey {
+
     case type = "type"
+
   }
 
   private enum MessageType: String, Codable {

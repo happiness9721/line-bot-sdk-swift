@@ -8,6 +8,7 @@
 import Foundation
 
 public struct LineArea {
+
   public var x: Int
   public var y: Int
   public var width: Int
@@ -19,4 +20,5 @@ public struct LineArea {
     self.width = width
     self.height = height
   }
+
 }
