@@ -257,27 +257,30 @@ class LineMessageTests : XCTestCase {
   }
 
   func testDecodeTemplateCarousel() {
-    var columns = [LineTemplate.Carousel.Column]()
-    columns.append(LineTemplate.Carousel.Column.init(thumbnailImageUrl: "https://example.com/bot/images/item1.jpg",
-                                                     imageBackgroundColor: "#FFFFFF",
-                                                     title: "this is menu",
-                                                     text: "description",
-                                                     defaultAction: .uri(label: "View detail", uri: "http://example.com/page/123"),
-                                                     actions: [.postback(label: "Buy", data: "action=buy&itemid=111", displayText: nil),
-                                                               .postback(label: "Add to cart", data: "action=add&itemid=111", displayText: nil),
-                                                               .uri(label: "View detail", uri: "http://example.com/page/111")]))
-    columns.append(LineTemplate.Carousel.Column.init(thumbnailImageUrl: "https://example.com/bot/images/item2.jpg",
-                                                     imageBackgroundColor: "#000000",
-                                                     title: "this is menu",
-                                                     text: "description",
-                                                     defaultAction: .uri(label: "View detail", uri: "http://example.com/page/222"),
-                                                     actions: [.postback(label: "Buy", data: "action=buy&itemid=222", displayText: nil),
-                                                               .postback(label: "Add to cart", data: "action=add&itemid=222", displayText: nil),
-                                                               .uri(label: "View detail", uri: "http://example.com/page/222")]))
+    var column1 = LineTemplate.Carousel.Column(text: "description",
+                                               actions: [.postback(label: "Buy", data: "action=buy&itemid=111", displayText: nil),
+                                                         .postback(label: "Add to cart", data: "action=add&itemid=111", displayText: nil),
+                                                         .uri(label: "View detail", uri: "http://example.com/page/111")])
+    column1.thumbnailImageUrl = "https://example.com/bot/images/item1.jpg"
+    column1.imageBackgroundColor = "#FFFFFF"
+    column1.title = "this is menu"
+    column1.defaultAction = .uri(label: "View detail", uri: "http://example.com/page/123")
+
+    var column2 = LineTemplate.Carousel.Column(text: "description",
+                                               actions: [.postback(label: "Buy", data: "action=buy&itemid=222", displayText: nil),
+                                                         .postback(label: "Add to cart", data: "action=add&itemid=222", displayText: nil),
+                                                         .uri(label: "View detail", uri: "http://example.com/page/222")])
+    column2.thumbnailImageUrl = "https://example.com/bot/images/item2.jpg"
+    column2.imageBackgroundColor = "#000000"
+    column2.title = "this is menu"
+    column2.defaultAction = .uri(label: "View detail", uri: "http://example.com/page/222")
+
+    var carousel = LineTemplate.Carousel(columns: [column1, column2])
+    carousel.imageAspectRatio = .rectangle
+    carousel.imageSize = .cover
     let message = LineMessage.template(altText: "this is a carousel template",
-                                       template: .carousel(.init(columns: columns,
-                                                                 imageAspectRatio: .rectangle,
-                                                                 imageSize: .cover)))
+                                       template: .carousel(carousel))
+
     let messageData = try! JSONSerialization.data(withJSONObject: message.toDict(),
                                                   options: [])
 
