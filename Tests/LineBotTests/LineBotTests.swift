@@ -2,7 +2,7 @@
 //  LineBotTests.swift
 //  LineBotTests
 //
-//  Created by 江承諭 on 2018/3/22.
+//  Created by happiness9721 on 2018/3/22.
 //
 
 import XCTest

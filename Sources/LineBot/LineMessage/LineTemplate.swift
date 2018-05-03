@@ -15,6 +15,7 @@ public enum LineTemplate {
   case imageCarousel(_: ImageCarousel)
 
   public struct Button {
+
     public var thumbnailImageUrl: String? = nil
     public var imageAspectRatio: ImageAspectRatio? = nil
     public var imageSize: ImageSize? = nil
@@ -28,25 +29,40 @@ public enum LineTemplate {
       self.text = text
       self.actions = actions
     }
+
   }
 
   public struct Confirm {
+
     public var text: String
     public var actions: [LineAction]
+
+    public init(text: String, actions: [LineAction]) {
+      self.text = text
+      self.actions = actions
+    }
+
   }
 
   public struct Carousel {
+
     public var columns: [Column]
     public var imageAspectRatio: ImageAspectRatio?
     public var imageSize: ImageSize?
 
     public struct Column {
+
       public var thumbnailImageUrl: String?
       public var imageBackgroundColor: String?
       public var title: String?
       public var text: String
       public var defaultAction: LineAction?
       public var actions: [LineAction]
+
+      public init(text: String, actions: [LineAction]) {
+        self.text = text
+        self.actions = actions
+      }
 
       internal func toDict() -> [String: Any] {
         var dict = [String: Any]()
@@ -58,15 +74,28 @@ public enum LineTemplate {
         dict["actions"] = actions.map { $0.toDict() }
         return dict
       }
+
     }
+
+    public init(columns: [Column]) {
+      self.columns = columns
+    }
+
   }
 
   public struct ImageCarousel {
+
     public var columns: [Column]
 
     public struct Column {
-      public var imageUrl: String?
+
+      public var imageUrl: String
       public var action: LineAction
+
+      public init(imageUrl: String, action: LineAction) {
+        self.imageUrl = imageUrl
+        self.action = action
+      }
 
       internal func toDict() -> [String: Any] {
         var dict = [String: Any]()
@@ -74,7 +103,13 @@ public enum LineTemplate {
         dict["action"] = action.toDict()
         return dict
       }
+
     }
+
+    public init(columns: [Column]) {
+      self.columns = columns
+    }
+
   }
 
   public enum ImageAspectRatio: String {

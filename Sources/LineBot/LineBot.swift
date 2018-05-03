@@ -161,11 +161,13 @@ public extension LineBot {
 }
 
 fileprivate extension URLSession {
+
   fileprivate func sendRequest(request: URLRequest, completionHandler: ((Data?) -> ())? = nil) {
     let dataTask = self.dataTask(with: request) { data, response, error in
       completionHandler?(data)
     }
     dataTask.resume()
   }
+  
 }
 

@@ -8,12 +8,14 @@
 import Foundation
 
 internal struct DataKey: CodingKey {
+
   var stringValue: String
   init(stringValue: String) {
     self.stringValue = stringValue
   }
   var intValue: Int? {return nil}
   init?(intValue: Int) {return nil}
+
 }
 
 internal struct LineWebhook: Decodable {
@@ -58,5 +60,6 @@ internal struct LineWebhook: Decodable {
     case beacon = "beacon"
 
   }
+
 }
 

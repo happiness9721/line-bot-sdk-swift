@@ -1,11 +1,16 @@
-SDK of the LINE Messaging API for Swift.
+# Line Bot SDK Swift
 
+[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+[![Continuous Integration](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://circleci.com/gh/happiness9721/line-bot-sdk-swift)
+[![Swift 4.1](https://img.shields.io/badge/swift-4.1-brightgreen.svg)](https://swift.org)
+
+SDK of the LINE Messaging API for Swift.
 
 ## About LINE Messaging API
 
 See the official API documentation for more information.
 
-English: https://devdocs.line.me/en/<br>
+English: https://devdocs.line.me/en/  
 Japanese: https://devdocs.line.me/ja/
 
 ## Installation
@@ -18,11 +23,11 @@ Add the dependency to Package.swift.
 
 ## Synopsis
 
-I only provide Vapor example code since just testing on this framework.<br>
-If you use other framework, all you need is provide parameters of `signature: String` and `bodyContent: String`.<br>
+I only provide Vapor example code since just testing on this framework.  
+If you use other framework, all you need is provide parameters of `signature: String` and `bodyContent: String`.  
 Feel free to send PR for providing other framework example. 🖖
 
-Vapor:
+Vapor 2:
 
 ```swift
 post("callback") { request in
@@ -62,7 +67,3 @@ post("callback") { request in
   return Response(status: .ok)
 }
 ```
-
-## LICENSE
-
-LineBot is released under the MIT license. See LICENSE for details.
