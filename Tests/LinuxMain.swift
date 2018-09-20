@@ -5,6 +5,7 @@ import XCTest
 
 XCTMain([
     testCase(LineBotTests.allTests),
+    testCase(LineErrorTests.allTests),
     testCase(LineMessageTests.allTests),
     testCase(LineEventMessageTests.allTests),
     testCase(LineWebhookTests.allTests),
