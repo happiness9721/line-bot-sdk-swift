@@ -10,7 +10,7 @@ SDK of the LINE Messaging API for Swift.
 
 See the official API documentation for more information.
 
-English: https://devdocs.line.me/en/  
+English: https://devdocs.line.me/en/
 Japanese: https://devdocs.line.me/ja/
 
 ## Installation
@@ -18,35 +18,30 @@ Japanese: https://devdocs.line.me/ja/
 Add the dependency to Package.swift.
 
 ```swift
-.package(url: "https://github.com/happiness9721/line-bot-sdk-swift.git", .upToNextMajor(from: "2.0.0"))
+.package(url: "https://github.com/happiness9721/line-bot-sdk-swift.git", from: "2.0.0")
 ```
 
 ## Synopsis
 
-I only provide Vapor example code since just testing on this framework.  
-If you use other framework, all you need is provide parameters of `signature: String` and `bodyContent: String`.  
+I only provide Vapor example code since just testing on this framework.
+If you use other framework, all you need is provide parameters of `signature: String` and `bodyContent: String`.
 Feel free to send PR for providing other framework example. 🖖
 
-Vapor 2:
+Vapor 3:
 
 ```swift
-post("callback") { request in
+router.post("callback") { (request) -> Future<HTTPStatus> in
   let bot = LineBot(accessToken: "ACCESS_TOKEN", channelSecret: "CHANNEL_SECRET")
 
-  guard let content = request.body.bytes?.makeString() else {
-    return Response(status: .badRequest)
+  let content = request.http.body.description
+  guard let signature = request.http.headers.firstValue(name: HTTPHeaderName("X-Line-Signature")) else {
+    return .badRequest
   }
-
-  guard let signature = request.headers["X-Line-Signature"] else {
-    return Response(status: .badRequest)
+  guard linebot.validateSignature(content: content, signature: signature) else {
+    return .badRequest
   }
-
-  guard bot.validateSignature(content: content, signature: signature) else {
-    return Response(status: .badRequest)
-  }
-
-  guard let events = bot.parseEventsFrom(requestBody: content) else {
-    return Response(status: .badRequest)
+  guard let events = linebot.parseEventsFrom(requestBody: content) else {
+    return .badRequest
   }
 
   for event in events {
@@ -64,6 +59,6 @@ post("callback") { request in
     }
   }
 
-  return Response(status: .ok)
+  return .ok
 }
 ```
