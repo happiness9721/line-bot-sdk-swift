@@ -54,7 +54,7 @@ class LineErrorTests : XCTestCase {
   }
 
   static let allTests = [
-    ("testDecodeErrorResponse", testDecodeErrorResponse,
-     "testInvalidReplyTokenErrorResponse", testInvalidReplyTokenErrorResponse)
+    ("testDecodeErrorResponse", testDecodeErrorResponse),
+    ("testInvalidReplyTokenErrorResponse", testInvalidReplyTokenErrorResponse)
   ]
 }
