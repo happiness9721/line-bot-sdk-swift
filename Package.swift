@@ -7,15 +7,14 @@ let package = Package(
     .library(name: "LineBot", targets: ["LineBot"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/IBM-Swift/BlueCryptor.git", from: "1.0.0"),
+    .package(name: "Cryptor", url: "https://github.com/Kitura/BlueCryptor.git", from: "1.0.0"),
   ],
   targets: [
     .target(name: "LineBot", dependencies: [
       .product(name: "Cryptor", package: "Cryptor"),
-    ])
+    ]),
     .testTarget(name: "LineBotTests", dependencies: [
       .target(name: "LineBot"),
-    ])
+    ]),
   ]
 )
-
