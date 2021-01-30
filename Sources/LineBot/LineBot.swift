@@ -6,10 +6,13 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 import Cryptor
 
 public final class LineBot {
-  
+
   internal let accessToken: String
   internal let channelSecret: String
   internal let endPoint: String
